@@ -51,6 +51,10 @@ const V=id=>{const e=document.getElementById(id);return e?e.value.trim():""};
 const MAR=[];[["أعزب|Single (M)",0],["آنسة|Miss (Single)",0],["متزوج|Married (M)",0],["متزوج ويعول|Married (M) with dependents",1],["متزوجة|Married (F)",0],["متزوجة وتعول|Married (F) with dependents",1],["مطلق|Divorced (M)",0],["مطلق ويعول|Divorced (M) with dependents",1],["مطلقة|Divorced (F)",0],["مطلقة وتعول|Divorced (F) with dependents",1],["أرمل|Widower",0],["أرمل ويعول|Widower with dependents",1],["أرملة|Widow",0],["أرملة وتعول|Widow with dependents",1]].forEach(a=>MAR.push(a[0]));
 const addr=(p,sh)=>[[p+"apt","رقم الشقة","Apartment No.","t",0,{s:sh}],[p+"bld","رقم العمارة","Building No.","t",0,{s:sh}],[p+"st","اسم الشارع","Street","t",0,{s:sh}],[p+"dist","الحي","District","t",0,{s:sh}],[p+"vil","القرية","Village","t",0,{s:sh}],[p+"mrk","المركز","Markaz","t",0,{s:sh}],[p+"city","المدينة","City","t",0,{s:sh}],[p+"gov","المحافظة","Governorate","s",GO,{s:sh}],[p+"full","العنوان كاملًا (تلقائي)","Full address (automatic)","ro",0,{w:1,s:sh}]];
 const isMid=()=>["شهادة محو الأمية","الشهادة الابتدائية","الشهادة الإعدادية","مؤهل متوسط","مؤهل فوق متوسط"].includes(V("edu")),isHi=()=>V("edu")=="مؤهل عالي",isSt=()=>V("edu")=="طالب";
+const gen=()=>{const v=V("nid");return v.length==14&&V("dob")?((+v[12])%2?"M":"F"):""};
+const pregS=()=>gen()=="F"&&V("marital")!=""&&V("marital")!="آنسة";
+const MIL=["أدّى الخدمة العسكرية|Completed military service","إعفاء نهائي|Permanent exemption","إعفاء مؤقت|Temporary exemption","مؤجَّل التجنيد|Deferred from conscription","تحت الطلب للتجنيد|Subject to call-up","لم يأتِ عليه الدور|Not yet called","غير مطلوب للتجنيد|Not required for conscription"];
+const MON=["الشهر الأول|Month 1","الشهر الثاني|Month 2","الشهر الثالث|Month 3","الشهر الرابع|Month 4","الشهر الخامس|Month 5","الشهر السادس|Month 6","الشهر السابع|Month 7","الشهر الثامن|Month 8","الشهر التاسع|Month 9"];
 const relS=()=>V("relco")=="نعم";const YRS=[];for(let y=2030;y>=1950;y--)YRS.push(y+"|"+y);
 const gdF=(id,s,sf="",sfe="")=>[[id+"r","تاريخ التخرج"+sf+" – الدور","Graduation"+sfe+" – session","s",["الدور الأول|First session","الدور الثاني|Second session"],{s}],[id+"y","تاريخ التخرج"+sf+" – السنة","Graduation"+sfe+" – year","s",YRS,{s}]];
 const isMid2=()=>isMid()&&V("edu")!="شهادة محو الأمية";const isMid3=()=>["مؤهل متوسط","مؤهل فوق متوسط"].includes(V("edu"));const notFresh=()=>!document.getElementById("fresh").checked;
@@ -68,7 +72,7 @@ const SEC=[
 ["rel","الديانة","Religion","s",["مسلم|Muslim","مسيحي|Christian"],{r:1}],
 ["marital","الحالة الاجتماعية","Marital status","s",MAR,{r:1}],
 ["kids","عدد الأبناء","Number of children","n",0,{s:()=>/تعول|ويعول/.test(V("marital")),r:1}],
-["mob","رقم الموبايل","Mobile","tel",0,{r:1}],["wa","واتساب","WhatsApp","tel"],["mail","البريد الإلكتروني","Email","email"]]],
+["mil","الموقف من الخدمة العسكرية (التجنيد)","Military service status","s",MIL,{s:()=>gen()=="M"}],["preg","هل توجد حالة حمل حاليًا؟","Is there a current pregnancy?","s",YN,{s:pregS}],["pregm","شهر الحمل الحالي","Current month of pregnancy","s",MON,{s:()=>pregS()&&V("preg")=="نعم"}],["mob","رقم الموبايل","Mobile","tel",0,{r:1}],["wa","واتساب","WhatsApp","tel"],["mail","البريد الإلكتروني","Email","email"]]],
 ["العنوان بالبطاقة","Address on ID",addr("id_")],
 ["العنوان الحالي","Current Address",[["same","العنوان الحالي هو نفس عنوان البطاقة؟","Current address same as ID?","s",YN,{r:1}]].concat(addr("cu_",()=>V("same")=="لا"))],
 ["شخص للرجوع إليه (أحد الأقارب)","Emergency Contact (Relative)",[["rn","اسم القريب","Relative name","t",0,{r:1}],["rr","صلة القرابة","Relationship","s",["الأب|Father","الأم|Mother","الزوج|Husband","الزوجة|Wife","الأخ|Brother","الأخت|Sister","العم|Paternal uncle","الخال|Maternal uncle"],{r:1}],["rm","رقم موبايل القريب","Relative mobile","tel",0,{r:1}]]],
