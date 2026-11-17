@@ -17,6 +17,7 @@ h2{margin:0 0 10px;color:var(--m);font-size:1.05rem}
 .f{display:flex;flex-direction:column;gap:3px;font-size:.88rem;color:var(--mut)}
 .f[hidden]{display:none}.w{grid-column:1/-1}
 input,select,textarea{font:inherit;color:var(--ink);padding:9px;border:1px solid var(--ln);border-radius:6px;background:#fff;width:100%}
+input:disabled{background:#ececee;cursor:not-allowed}
 input[readonly]{background:#ececee}
 input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--m);outline-offset:1px}
 .note{font-size:.82rem;color:var(--m);min-height:1.2em}.note.ok{color:#2d6a3e}
@@ -59,7 +60,7 @@ const relS=()=>V("relco")=="نعم";const YRS=[];for(let y=2030;y>=1950;y--)YRS.
 const gdF=(id,s,sf="",sfe="")=>[[id+"r","تاريخ التخرج"+sf+" – الدور","Graduation"+sfe+" – session","s",["الدور الأول|First session","الدور الثاني|Second session"],{s}],[id+"y","تاريخ التخرج"+sf+" – السنة","Graduation"+sfe+" – year","s",YRS,{s}]];
 const isMid2=()=>isMid()&&V("edu")!="شهادة محو الأمية";const isMid3=()=>["مؤهل متوسط","مؤهل فوق متوسط"].includes(V("edu"));const notFresh=()=>!document.getElementById("fresh").checked;
 const CNT={co:1,cr:1},FLAG={ma:0,phd:0};
-const blk=(k,key,hd,hde,fs)=>{let a=[];for(let i=1;i<=10;i++){const s=()=>(key=="co"?notFresh():true)&&CNT[key]>=i,p=k+i+"_",o={s};a.push([p+"h",hd+i,hde+i,"h",0,{w:1,s}]);fs.forEach(f=>a.push([p+f[0],f[1]+" ("+i+")",f[2]+" ("+i+")",f[3]||"t",0,o]))}return a};
+const blk=(k,key,hd,hde,fs)=>{let a=[];for(let i=1;i<=10;i++){const s=()=>(key=="co"?notFresh():true)&&CNT[key]>=i,p=k+i+"_",o={s};a.push([p+"h",hd+i,hde+i,"h",0,{w:1,s}]);fs.forEach(f=>{a.push([p+f[0],f[1]+" ("+i+")",f[2]+" ("+i+")",f[3]||"t",0,o]);if(k=="c"&&i==1&&f[0]=="f")a.push(["c1_now","ما زلت أعمل بهذه الشركة حتى الآن","I still work at this company","c",0,{w:1,s}])})}return a};
 const expF=()=>blk("c","co","الشركة رقم ","Company #",[["n","اسم الشركة","Company name"],["j","الوظيفة","Job title"],["f","من (تاريخ)","From","d"],["t","إلى (تاريخ)","To","d"],["s","آخر راتب","Last salary","n"],["r","سبب ترك العمل","Reason for leaving"],["mn","اسم المدير المباشر","Manager name"],["mp","رقم المدير المباشر","Manager phone","tel"]]);
 const crsF=()=>blk("k","cr","الدورة رقم ","Course #",[["n","اسم الكورس أو الدورة","Course name"],["d","مدتها","Duration"],["p","المكان الذي درست فيه","Place of study"]]);
 const hiB=(k,ar,en)=>{const o={s:()=>FLAG[k]};return[[k,"+ إضافة "+ar+" (اختياري)","+ Add "+en+" (optional)","tg",0,{w:1,alt:["× إلغاء "+ar,"× Remove "+en]}],[k+"_n","اسم "+ar,en+" title","t",0,o],[k+"_s","التخصص ("+ar+")","Specialization ("+en+")","t",0,o],...gdF(k+"_d",o.s," ("+ar+")"," ("+en+")"),[k+"_i","جهة التخرج ("+ar+")","Awarding institution ("+en+")","t",0,o]]};
@@ -97,7 +98,7 @@ else if(t=="f")h+=`<input type=file id=${id} accept="${id=="photo"?"image/*":".p
 else h+=`<input id=${id} type="${{ro:"text",n:"number",d:"date",tel:"tel",email:"email"}[t]||"text"}" ${t=="ro"?"readonly":""} ${t=="n"?"min=0":""} ${t=="tel"?"inputmode=tel":""}>`;
 if(x.note)h+=`<span class=note id=nidn></span>`;l.innerHTML=h;if(x.s)l.hidden=true;g.appendChild(l)});form.appendChild(s)});setLang(lang)}
 var setLang=function(l){lang=l;document.documentElement.lang=l;document.documentElement.dir=l=="ar"?"rtl":"ltr";document.querySelectorAll("[data-a]").forEach(e=>e.textContent=e.dataset[l=="ar"?"a":"e"]);document.getElementById("lang").textContent=l=="ar"?"English":"عربي";nidCheck()}
-function vis(){["co","cr"].forEach(k=>{const b=document.getElementById("add_"+k);if(b)b.disabled=CNT[k]>=10});FL.forEach(f=>{const x=f[5]||{};if(x.s){const w=document.getElementById("w_"+f[0]);const sh=x.s();w.hidden=!sh}})}
+function vis(){const nw=document.getElementById("c1_now");if(nw){["c1_t","c1_r"].forEach(i=>{const e=document.getElementById(i);if(e){e.disabled=nw.checked;if(nw.checked)e.value=""}})}["co","cr"].forEach(k=>{const b=document.getElementById("add_"+k);if(b)b.disabled=CNT[k]>=10});FL.forEach(f=>{const x=f[5]||{};if(x.s){const w=document.getElementById("w_"+f[0]);const sh=x.s();w.hidden=!sh}})}
 const AF=[["apt","شقة ","Apt "],["bld","عمارة ","Bldg "],["st","شارع ","St. "],["dist","حي ","District "],["vil","قرية ","Village "],["mrk","مركز ","Markaz "],["city","مدينة ","City "],["gov","",""]];
 function updFull(){const ar=lang=="ar";["id_","cu_"].forEach(p=>{const o=document.getElementById(p+"full");if(!o)return;o.value=AF.map(a=>{const v=V(p+a[0]);return v?(ar?a[1]:a[2])+v:""}).filter(Boolean).join(ar?"، ":", ")});const n=document.getElementById("nfull");if(n)n.value=["n1","n2","n3","n4"].map(V).filter(Boolean).join(" ")}
 function nidCheck(){const v=V("nid").replace(/\D/g,"").slice(0,14);document.getElementById("nid").value=v;const n=document.getElementById("nidn");n.className="note";["dob","age","gender","bplace"].forEach(k=>document.getElementById(k).value="");
@@ -110,11 +111,11 @@ const p=x=>String(x).padStart(2,"0");document.getElementById("dob").value=`${p(d
 document.getElementById("age").value=ar?`${A} سنة، ${M} شهر، ${D} يوم`:`${A} y, ${M} m, ${D} d`;
 document.getElementById("gender").value=(+v[12])%2?(ar?"ذكر":"Male"):(ar?"أنثى":"Female");
 document.getElementById("bplace").value=GOV[v.slice(7,9)][ar?0:1];n.className="note ok";n.textContent=ar?"✓ تم مراجعة الرقم القومي (14 رقم)":"✓ ID verified (14 digits)";}
-const same=()=>V("same")=="نعم";
+const same=()=>V("same")=="نعم";const nowC=()=>{const e=document.getElementById("c1_now");return !!(e&&e.checked)};const nowSkip=id=>nowC()&&(id=="c1_t"||id=="c1_r");
 function collect(){const rows=[],miss=[],mid=[];SEC.forEach(([sa,se,fs])=>fs.forEach(f=>{const[id,ar,en,t,o,x={}]=f;if(t=="h"||t=="b"||t=="tg"||id=="adate"||id=="nfull")return;const w=document.getElementById("w_"+id);if(w.hidden&&!(id.startsWith("cu_")&&same()))return;
 const el=document.getElementById(id);let v=t=="c"?(el.checked?"نعم":"لا"):t=="f"?(el.files[0]?el.files[0].name:""):el.value.trim();
 if(id.startsWith("cu_")&&same()){v=document.getElementById("id_"+id.slice(3)).value.trim()}
-if(!(id.startsWith("cu_")&&same())&&!isOpt(id)&&t!="ro"&&t!="c"&&!v){const pf=/^(id_|cu_)/.test(id)?(lang=="ar"?sa:se)+": ":"";miss.push(pf+(lang=="ar"?ar:en));mid.push(id)}const P=/^id_/.test(id)?["بالبطاقة - ","ID - "]:/^cu_/.test(id)?["الحالي - ","Current - "]:["",""];rows.push([P[0]+ar,P[1]+en,v,sa,se])}));return{rows,miss,mid}}
+if(id=="c1_t"&&nowC())v="حتى الآن";if(!(id.startsWith("cu_")&&same())&&!nowSkip(id)&&!isOpt(id)&&t!="ro"&&t!="c"&&!v){const pf=/^(id_|cu_)/.test(id)?(lang=="ar"?sa:se)+": ":"";miss.push(pf+(lang=="ar"?ar:en));mid.push(id)}const P=/^id_/.test(id)?["بالبطاقة - ","ID - "]:/^cu_/.test(id)?["الحالي - ","Current - "]:["",""];rows.push([P[0]+ar,P[1]+en,v,sa,se])}));return{rows,miss,mid}}
 function reportHTML(rows){const ar=lang=="ar";let h=`<div dir="${ar?"rtl":"ltr"}"><div style="text-align:center"><img src="${LOGO}" width=90>${PHOTO?` <img src="${PHOTO}" width=90 style="margin:0 20px">`:""}<h2 style="color:#7a1f2b">${ar?"الإسراء فارماسوتيكال أوبتيما — طلب توظيف":"Alesraa Pharmaceuticals Optima — Job Application"}</h2></div>`;let cur="";rows.forEach(r=>{const s=ar?r[3]:r[4];if(s!=cur){if(cur)h+="</table>";h+=`<h3>${s}</h3><table>`;cur=s}h+=`<tr><th>${r[0]} / ${r[1]}</th><td>${r[2]||"—"}</td></tr>`});return h+`</table><div style="page-break-inside:avoid;margin-top:14px"><p style="font-size:11px;line-height:1.8;text-align:justify">${(ar?DA:DE).replace(/\n/g,"<br>")}</p><p style="font-size:14px;margin-top:40px"><b>${ar?"توقيع المتقدم":"Applicant signature"}:</b> ................................................ &nbsp;&nbsp; <b>${ar?"التاريخ":"Date"}:</b> ....................</p></div></div>`}
 function dl(name,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove()}
 function word(rows,nm){const h=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:4px}th{background:#e9eaec;width:38%}</style></head><body>${reportHTML(rows)}</body></html>`;dl(nm+".doc",new Blob(["\ufeff",h],{type:"application/msword"}))}
@@ -142,7 +143,7 @@ const sb=document.getElementById("sub");sb.disabled=true;document.getElementById
 if(location.hash=="#admin")document.getElementById("adm").hidden=false;
 const pre={co:"c",cr:"k"};["co","cr"].forEach(k=>{document.getElementById("add_"+k).onclick=()=>{if(CNT[k]<10){CNT[k]++;vis()}};document.getElementById("del_"+k).onclick=()=>{if(CNT[k]>1){FL.filter(f=>f[0].startsWith(pre[k]+CNT[k]+"_")&&f[3]!="h").forEach(f=>{const e=document.getElementById(f[0]);if(e)e.value=""});CNT[k]--;vis()}}});
 ["ma","phd"].forEach(k=>{const b=document.getElementById("tg_"+k),f=FL.find(x=>x[0]==k);b.onclick=()=>{FLAG[k]^=1;if(!FLAG[k])FL.filter(x=>x[0].startsWith(k+"_")).forEach(x=>{const e=document.getElementById(x[0]);if(e)e.value=""});b.dataset.a=FLAG[k]?f[5].alt[0]:f[1];b.dataset.e=FLAG[k]?f[5].alt[1]:f[2];setLang(lang);vis()}});
-setNow();const ni=document.getElementById("nid");ni.maxLength=14;ni.inputMode="numeric";
+setNow();vis();const ni=document.getElementById("nid");ni.maxLength=14;ni.inputMode="numeric";
 const _sl=setLang;setLang=function(l){_sl(l);updFull();document.getElementById("dtx").textContent=l=="ar"?DA:DE};setLang(lang);VER("نسخة 3 — 3/3 كل شيء يعمل ✓");setTimeout(()=>{const e=document.getElementById("ver");if(e)e.remove()},4000);
 })();
 </script></body></html>
